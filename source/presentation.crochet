@@ -1,0 +1,104 @@
+% crochet
+
+open crochet.novella;
+singleton nvl;
+singleton nvl-asset;
+
+command nvl say: Text do
+  novella say: Text;
+  novella wait-interaction;
+end
+
+command nvl say-line-wait: Text do
+  nvl say: Text;
+  nvl clear-dialogue;
+end
+
+command nvl say-line: Text do
+  nvl clear-dialogue;
+  nvl say: Text;
+end
+
+command nvl wait do
+  novella wait-interaction;
+end
+
+command nvl narrate: Text do
+  nvl say: (#nvl-text italic: (Text as nvl-text-component));
+end
+
+command nvl title: Title do
+  novella clear: novella layers title;
+  novella at: novella layers title show: Title;
+end
+
+command nvl clear do
+  novella clear: novella layers title;
+  novella clear: novella layers background;
+  novella clear: novella layers dialogue;
+end
+
+command nvl clear-dialogue do
+  novella clear: novella layers dialogue;
+end
+
+command nvl clear: X do
+  novella clear: X;
+end
+
+command nvl show-background: Bg do
+  nvl at: novella layers background show: Bg;
+end
+
+command nvl show: X =
+  nvl at: novella layers dialogue show: X;
+
+command nvl at: L show: X do
+  novella at: L show: X;
+end
+
+command nvl at: L show: (X is html-node) =
+  nvl at: L show: X to-element;
+
+command nvl transform: X with: T =
+  novella transform: X with: T;
+
+command nvl set-screen-class: Class do
+  foreign html.set-screen-class(Class);
+  self;
+end
+
+command nvl set-css-variable: Name to: Value do
+  foreign html.set-css-variable(Name, Value);
+  self;
+end
+
+singleton html;
+type html-node(box);
+
+command html class: Class with: Children =
+  new html-node(foreign html.make(Class, Children map: { X in (html from: X).box }));
+
+command html image: Src =
+  new html-node(foreign html.image(Src));
+
+command html text: X =
+  new html-node(foreign html.text(X));
+
+command html from: (X is text) =
+  html text: X;
+
+command html from: (X is html-node) =
+  X;
+
+command html-node to-element =
+  #nvl-element-dom from-html: self.box;
+
+
+command nvl-asset ok-img = html image: (package assets at: "assets/ok.png" | read-as-data-url);
+command nvl-asset cg = #nvl-image from-asset: (package assets at: "assets/cg.png");
+command nvl-asset wood = #nvl-image from-asset: (package assets at: "assets/wood.png");
+command nvl-asset title = #nvl-element-dom from-html: (foreign rain.title());
+command nvl-asset fin = #nvl-element-dom from-html: (foreign rain.fin());
+command nvl-asset rain = #nvl-element-dom from-html: (foreign rain.rain());
+command nvl-asset black = #nvl-element-dom from-html: (foreign rain.black());
